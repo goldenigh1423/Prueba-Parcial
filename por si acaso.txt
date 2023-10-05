@@ -1,0 +1,149 @@
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+/**
+ *
+ * @author csant
+ */
+public class Ejemplo {
+
+    public static void main(String[] args) {
+        JFrame ventana=new JFrame("Juego Random");
+        ventana.setSize(500, 300);
+        ventana.setLocationRelativeTo(null); // Centrar en la pantalla
+        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        ventana.add(panel);
+
+        JTextField texto1 = new JTextField();        
+        texto1.setBackground(Color.WHITE);
+        texto1.setPreferredSize(new Dimension(500,100));
+        panel.add(texto1, BorderLayout.NORTH);
+
+        JTextArea texto2 = new JTextArea();
+        texto2.setEditable(false);
+        texto2.setPreferredSize(new Dimension(500,100));
+        texto2.setAlignmentY(Component.CENTER_ALIGNMENT);
+        panel.add(texto2, BorderLayout.SOUTH);
+        
+        JPanel botonpanel = new JPanel(new GridLayout(1, 4, 10, 0)); // 1 fila, 4 columnas, espacio horizontal de 10 píxeles
+        botonpanel.setPreferredSize(new Dimension(300, 50)); // Ancho suficiente para acomodar los botones
+        panel.add(botonpanel, BorderLayout.CENTER);
+
+        final int[] ele={0};
+        
+        JButton boton1 = new JButton("KeyPressed");
+        boton1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                texto1.setEditable(true);
+                texto1.setText("");
+                texto2.setText("");
+                ele[0]=2;
+            }
+        });
+        botonpanel.add(boton1);
+        
+        JButton boton2 = new JButton("KeyTyped");
+        boton2.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                texto1.setEditable(true);
+                texto1.setText("");
+                texto2.setText("");
+                ele[0]=1;
+            }
+        });
+        botonpanel.add(boton2);
+        
+        JButton boton3 = new JButton("KeyReleased");
+        boton3.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                texto1.setEditable(true);
+                texto1.setText("");
+                texto2.setText("");
+                ele[0]=3;
+            }
+        });
+        botonpanel.add(boton3);
+        
+        JButton boton4 = new JButton("Juego");
+        boton4.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                texto1.setEditable(false);
+                texto1.setText("");
+                texto2.setText("");
+                ele[0]=4;
+            }
+        });
+        botonpanel.add(boton4);
+
+        final boolean[] trampa={false};
+        final int[] conteo={0};
+        final String[] palabra={""};
+        
+        KeyListener key=new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if(ele[0]==1){
+                    if((int)e.getKeyChar()==10){texto2.append("\n");}
+                    texto2.append("KeyTyped ");
+                }
+                if(ele[0]==4){
+                    if(trampa[0]){
+                        String a="¿Cual es ";
+                        if(conteo[0]<a.length()){
+                            texto1.setText(texto1.getText()+a.charAt(conteo[0]));
+                            conteo[0]++;
+                        }
+                        palabra[0]+=e.getKeyChar()+"";
+                    }else{
+                        if((int)e.getKeyChar()==10){
+                            texto1.setText(texto1.getText()+"?");
+                            texto2.append(palabra[0]);
+                        }
+                        if((int)e.getKeyChar()==8){
+                            texto1.setText(texto1.getText().substring(0,texto1.getText().length()-1));
+                        }else{
+                            texto1.setText(texto1.getText()+e.getKeyChar());
+                        }
+                    }
+                }
+            }
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(ele[0]==2){
+                    if((int)e.getKeyChar()==10){texto2.append("\n");}
+                    texto2.append("KeyPressed ");
+                }
+            }
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if(ele[0]==3){
+                    if((int)e.getKeyChar()==10){texto2.append("\n");}
+                    texto2.append("KeyReleased ");
+                }
+                if(ele[0]==4&&(int)e.getKeyChar()==65535){
+                        trampa[0]=!trampa[0];
+                }
+            }
+        };
+        
+        texto1.addKeyListener(key);
+        
+        ventana.setVisible(true);
+    }
+}
